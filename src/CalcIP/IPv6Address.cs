@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CalcIP
 {
-    public struct IPv6Address : IIPAddress<IPv6Address>, IComparable<IPv6Address>, IEquatable<IPv6Address>
+    public struct IPv6Address : IIPAddress<IPv6Address>
     {
         public readonly ulong TopHalf;
         public readonly ulong BottomHalf;
@@ -350,6 +350,11 @@ namespace CalcIP
         public static IPv6Address operator^(IPv6Address left, IPv6Address right)
         {
             return new IPv6Address(left.TopHalf ^ right.TopHalf, left.BottomHalf ^ right.BottomHalf);
+        }
+
+        public IPv6Address BitwiseXor(IPv6Address other)
+        {
+            return this ^ other;
         }
 
         public static IPv6Address operator~(IPv6Address operand)

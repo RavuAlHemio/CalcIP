@@ -183,5 +183,11 @@ namespace CalcIP
             var padding = new string(padChar, diff);
             return s + padding;
         }
+
+        public static T MaxAny<T>(T one, T other)
+            where T : IComparable<T>
+        {
+            return (one.CompareTo(other) >= 0) ? one : other;
+        }
     }
 }

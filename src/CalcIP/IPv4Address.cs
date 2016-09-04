@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace CalcIP
 {
-    public struct IPv4Address : IIPAddress<IPv4Address>, IComparable<IPv4Address>, IEquatable<IPv4Address>
+    public struct IPv4Address : IIPAddress<IPv4Address>
     {
         public readonly uint AddressValue;
 
@@ -138,6 +138,11 @@ namespace CalcIP
         public static IPv4Address operator^(IPv4Address left, IPv4Address right)
         {
             return new IPv4Address(left.AddressValue ^ right.AddressValue);
+        }
+
+        public IPv4Address BitwiseXor(IPv4Address other)
+        {
+            return this ^ other;
         }
 
         public static IPv4Address operator~(IPv4Address operand)

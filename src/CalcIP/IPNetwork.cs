@@ -154,6 +154,24 @@ namespace CalcIP
             return other.IsSupersetOf(this);
         }
 
+        public bool Intersects(IPNetwork<TAddress> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            TAddress thisFirst = this.BaseAddress;
+            TAddress thisLast = this.BroadcastAddress ?? this.BaseAddress;
+            TAddress otherFirst = other.BaseAddress;
+            TAddress otherLast = other.BroadcastAddress ?? other.BaseAddress;
+
+            // thisFirst <= otherLast && otherFirst <= thisLast
+            int comp1 = thisFirst.CompareTo(otherLast);
+            int comp2 = otherFirst.CompareTo(thisLast);
+            return comp1 <= 0 && comp2 <= 0;
+        }
+
         protected static TAddress Unravel(TAddress address, TAddress subnetMask)
         {
             if (CalcIPUtils.CidrPrefixFromSubnetMaskBytes(subnetMask.Bytes).HasValue)
