@@ -38,6 +38,12 @@ namespace CalcIP
                 addressString = addressString + "0";
             }
 
+            if (addressString[0] == ':' || addressString[addressString.Length-1] == ':')
+            {
+                // ":a" or "a:"
+                return null;
+            }
+
             string[] chunks = addressString.Split(':');
             if (chunks.Length > 8)
             {

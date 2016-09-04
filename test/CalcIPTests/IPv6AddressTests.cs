@@ -47,6 +47,8 @@ namespace CalcIPTests
             testParse(0xFE80000000000000ul, 0xA55E55ED0B501E7Eul, "fe80::a55e:55ed:b50:1e7e");
 
             Assert.Null(IPv6Address.MaybeParse(":"));
+            Assert.Null(IPv6Address.MaybeParse("a:"));
+            Assert.Null(IPv6Address.MaybeParse(":a"));
             Assert.Null(IPv6Address.MaybeParse(":::"));
             Assert.Null(IPv6Address.MaybeParse("fe80::a55e:55ed::0bso:1e7e"));
             Assert.Null(IPv6Address.MaybeParse("fe80::a55e:55ed:0bso:1ete"));
