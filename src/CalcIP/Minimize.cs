@@ -116,7 +116,7 @@ namespace CalcIP
             return 1;
         }
 
-        private static void MinimizeAndOutput<TAddress>(IEnumerable<IPNetwork<TAddress>> subnets,
+        public static List<IPNetwork<TAddress>> MinimizeSubnets<TAddress>(IEnumerable<IPNetwork<TAddress>> subnets,
             Func<TAddress, TAddress, IPNetwork<TAddress>> createSubnet)
             where TAddress : struct, IIPAddress<TAddress>
         {
@@ -207,9 +207,17 @@ namespace CalcIP
                 }
             }
 
-            var finalSubnets = filteredSubnets
+            return filteredSubnets
                 .OrderBy(n => n.BaseAddress)
-                .ThenBy(n => n.SubnetMask);
+                .ThenBy(n => n.SubnetMask)
+                .ToList();
+        }
+
+        private static void MinimizeAndOutput<TAddress>(IEnumerable<IPNetwork<TAddress>> subnets,
+            Func<TAddress, TAddress, IPNetwork<TAddress>> createSubnet)
+            where TAddress : struct, IIPAddress<TAddress>
+        {
+            List<IPNetwork<TAddress>> finalSubnets = MinimizeSubnets(subnets, createSubnet);
 
             foreach (IPNetwork<TAddress> subnet in finalSubnets)
             {

@@ -189,5 +189,11 @@ namespace CalcIP
         {
             return (one.CompareTo(other) >= 0) ? one : other;
         }
+
+        public static T MinAny<T>(T one, T other)
+            where T : IComparable<T>
+        {
+            return (one.CompareTo(other) <= 0) ? one : other;
+        }
     }
 }

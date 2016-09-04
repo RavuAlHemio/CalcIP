@@ -34,6 +34,10 @@ namespace CalcIP
             {
                 return Minimize.PerformMinimize(args);
             }
+            else if (args[0] == "-d" || args[0] == "--derange")
+            {
+                return Derange.PerformDerange(args);
+            }
             else
             {
                 return ShowNet.PerformShowNet(args);
@@ -45,6 +49,8 @@ namespace CalcIP
             Console.Error.WriteLine(
                 "Usage: CalcIP SPEC...\r\n" +
                 "       CalcIP -m|--minimize SPEC...\r\n" +
+                "       CalcIP -d|--derange IPV4ADDRESS IPV4ADDRESS\r\n" +
+                "       CalcIP -d|--derange IPV6ADDRESS IPV6ADDRESS\r\n" +
                 "\r\n" +
                 "SPEC is one of: IPV4ADDRESS/IPV4SUBNETMASK\r\n" +
                 "                IPV4ADDRESS/CIDRPREFIX\r\n" +
