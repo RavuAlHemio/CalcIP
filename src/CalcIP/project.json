@@ -1,16 +1,21 @@
 {
-    "buildOptions": {
-        "debugType": "portable"
-    },
-    "dependencies": {
-        "System.Collections.Immutable": "1.2.0"
-    },
-    "frameworks": {
-        "netstandard1.1": {
-            "dependencies": {
-                "NETStandard.Library": "1.6.0",
-                "System.Runtime.Numerics": "4.0.1"
-            }
-        }
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "System.Collections.Immutable": "1.2.0"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        },
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Numerics": "4.0.1"
+      }
     }
+  }
 }

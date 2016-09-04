@@ -227,6 +227,17 @@ namespace CalcIP
             return string.Join(":", chunkStrings);
         }
 
+        public string ToFullString()
+        {
+            var chunks = Chunks;
+            var chunkStrings = new string[chunks.Length];
+            for (int i = 0; i < chunkStrings.Length; ++i)
+            {
+                chunkStrings[i] = chunks[i].ToString("x4", CultureInfo.InvariantCulture);
+            }
+            return string.Join(":", chunkStrings);
+        }
+
         // byte operations
         public byte[] Bytes => new byte[] {
             (byte)((TopHalf >> 56) & 0xFF),

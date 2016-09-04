@@ -147,5 +147,41 @@ namespace CalcIP
 
             return prefixLength;
         }
+
+        public static string ByteToBinary(byte b)
+        {
+            var ret = new char[8];
+            for (int i = 0; i < ret.Length; ++i)
+            {
+                ret[i] = ((b & (1 << (ret.Length-i-1))) != 0)
+                    ? '1'
+                    : '0';
+            }
+            return new string(ret);
+        }
+
+        public static string UInt16ToBinary(ushort b)
+        {
+            var ret = new char[16];
+            for (int i = 0; i < ret.Length; ++i)
+            {
+                ret[i] = ((b & (1 << (ret.Length-i-1))) != 0)
+                    ? '1'
+                    : '0';
+            }
+            return new string(ret);
+        }
+
+        public static string PadRightTo(string s, int count, char padChar = ' ')
+        {
+            if (s.Length >= count)
+            {
+                return s;
+            }
+
+            int diff = count - s.Length;
+            var padding = new string(padChar, diff);
+            return s + padding;
+        }
     }
 }

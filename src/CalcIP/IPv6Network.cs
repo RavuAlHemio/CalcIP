@@ -9,6 +9,11 @@ namespace CalcIP
         {
         }
 
+        public IPv6Network(IPv6Address address, int cidrPrefix)
+            : base(address, cidrPrefix)
+        {
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null || this.GetType() != obj.GetType())
