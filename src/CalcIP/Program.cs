@@ -38,6 +38,14 @@ namespace CalcIP
             {
                 return Derange.PerformDerange(args);
             }
+            else if (args[0] == "-s" || args[0] == "--split")
+            {
+                return Split.PerformSplit(args);
+            }
+            else if (args[0] == "-r" || args[0] == "--resize")
+            {
+                return Resize.PerformResize(args);
+            }
             else
             {
                 return ShowNet.PerformShowNet(args);
@@ -49,13 +57,17 @@ namespace CalcIP
             Console.Error.WriteLine(
                 "Usage: CalcIP SPEC...\r\n" +
                 "       CalcIP -m|--minimize SPEC...\r\n" +
-                "       CalcIP -d|--derange IPV4ADDRESS IPV4ADDRESS\r\n" +
-                "       CalcIP -d|--derange IPV6ADDRESS IPV6ADDRESS\r\n" +
+                "       CalcIP -d|--derange IPADDRESS IPADDRESS\r\n" +
+                "       CalcIP -s|--split IPADDRESS/CIDRPREFIX HOSTCOUNT...\r\n" +
+                "       CalcIP -r|--resize SPEC SUBNET\r\n" +
                 "\r\n" +
-                "SPEC is one of: IPV4ADDRESS/IPV4SUBNETMASK\r\n" +
-                "                IPV4ADDRESS/CIDRPREFIX\r\n" +
-                "                IPV6ADDRESS/IPV6SUBNETMASK\r\n" +
-                "                IPV6ADDRESS/CIDRPREFIX\r\n"
+                "SPEC is one of: IPADDRESS/IPSUBNETMASK\r\n" +
+                "                IPADDRESS/CIDRPREFIX\r\n" +
+                "\r\n" +
+                "SUBNET is one of: SUBNETMASK\r\n" +
+                "                  CIDRPREFIX\r\n" +
+                "\r\n" +
+                "IPv4 and IPv6 are supported, but cannot be mixed within an invocation.\r\n"
             );
             Environment.Exit(exitCode);
         }
