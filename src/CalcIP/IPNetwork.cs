@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 
@@ -122,6 +123,18 @@ namespace CalcIP
         public override int GetHashCode()
         {
             return 2*BaseAddress.GetHashCode() + 3*SubnetMask.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            if (CidrPrefix.HasValue)
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0}/{1}", BaseAddress, CidrPrefix.Value);
+            }
+            else
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0}/{1}", BaseAddress, SubnetMask);
+            }
         }
 
         public bool Contains(TAddress address)
