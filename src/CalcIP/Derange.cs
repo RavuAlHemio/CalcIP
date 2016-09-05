@@ -75,11 +75,11 @@ namespace CalcIP
                 // try enlarging the subnet
                 IPNetwork<TAddress> largerSubnet = createCidr(firstAddress, currentSubnet.CidrPrefix.Value - 1);
                 if (!largerSubnet.BaseAddress.Equals(firstAddress) ||
-                    (largerSubnet.BroadcastAddress ?? largerSubnet.BaseAddress).CompareTo(lastAddress) > 0)
+                    largerSubnet.LastAddressOfSubnet.CompareTo(lastAddress) > 0)
                 {
                     // we've gone beyond; store what we have and continue with the next chunk
                     ret.Add(currentSubnet);
-                    firstAddress = (currentSubnet.BroadcastAddress ?? currentSubnet.BaseAddress).Add(1);
+                    firstAddress = currentSubnet.LastAddressOfSubnet.Add(1);
                     currentSubnet = createCidr(firstAddress, lastAddress.Bytes.Length * 8);
                 }
                 else

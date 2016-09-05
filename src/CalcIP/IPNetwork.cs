@@ -117,6 +117,8 @@ namespace CalcIP
             }
         }
 
+        public TAddress LastAddressOfSubnet => BroadcastAddress ?? BaseAddress;
+
         public override int GetHashCode()
         {
             return 2*BaseAddress.GetHashCode() + 3*SubnetMask.GetHashCode();
@@ -162,9 +164,9 @@ namespace CalcIP
             }
 
             TAddress thisFirst = this.BaseAddress;
-            TAddress thisLast = this.BroadcastAddress ?? this.BaseAddress;
+            TAddress thisLast = this.LastAddressOfSubnet;
             TAddress otherFirst = other.BaseAddress;
-            TAddress otherLast = other.BroadcastAddress ?? other.BaseAddress;
+            TAddress otherLast = other.LastAddressOfSubnet;
 
             // thisFirst <= otherLast && otherFirst <= thisLast
             int comp1 = thisFirst.CompareTo(otherLast);

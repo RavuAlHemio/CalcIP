@@ -160,8 +160,7 @@ namespace CalcIP
                             continue;
                         }
 
-                        var lastI = sortedSubnets[i].BroadcastAddress ?? sortedSubnets[i].BaseAddress;
-                        var lastIPlusOne = lastI.Add(1);
+                        var lastIPlusOne = sortedSubnets[i].LastAddressOfSubnet.Add(1);
                         if (!lastIPlusOne.Equals(sortedSubnets[j].BaseAddress))
                         {
                             // not adjacent
