@@ -118,6 +118,21 @@ namespace CalcIP
             }
         }
 
+        public TAddress NextSubnetBaseAddress
+        {
+            get
+            {
+                int hostBitsAvailable = CiscoWildcard.Bytes.Sum(b => CalcIPUtils.BytePopCount[b]);
+                var unraveledBaseAddress = Unravel(BaseAddress, SubnetMask);
+                var hostCountAddress = BaseAddress
+                    .SubnetMaskFromCidrPrefix(BaseAddress.Bytes.Length * 8 - hostBitsAvailable)
+                    .BitwiseNot();
+                var unraveledBroadcastAddress = unraveledBaseAddress.Add(hostCountAddress);
+                var unraveledNextSubnetBaseAddress = unraveledBroadcastAddress.Add(1);
+                return Weave(unraveledNextSubnetBaseAddress, SubnetMask);
+            }
+        }
+
         public TAddress LastAddressOfSubnet => BroadcastAddress ?? BaseAddress;
 
         public override int GetHashCode()

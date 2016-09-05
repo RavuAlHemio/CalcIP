@@ -85,10 +85,12 @@ namespace CalcIP
             OutputIPv6Network(addressAndNet.Item1, addressAndNet.Item2);
         }
 
-        private static void OutputIPv4Network(IPv4Address addr, IPv4Network net)
+        public static void OutputIPv4Network(IPv4Address addr, IPNetwork<IPv4Address> net)
         {
             const int labelWidth = 11;
             const int addressWidth = 21;
+
+            ConsoleColor originalColor = Console.ForegroundColor;
 
             Action<string, string> outputInitialColumns = (label, address) =>
             {
@@ -190,9 +192,11 @@ namespace CalcIP
                 Console.ForegroundColor = Color.Label;
                 Console.WriteLine("no hosts/net");
             }
+
+            Console.ForegroundColor = originalColor;
         }
 
-        private static void OutputIPv6Network(IPv6Address addr, IPv6Network net)
+        public static void OutputIPv6Network(IPv6Address addr, IPNetwork<IPv6Address> net)
         {
             const int labelWidth = 11;
             const int addressWidth = 46;
@@ -204,6 +208,8 @@ namespace CalcIP
                 Console.ForegroundColor = Color.IPAddress;
                 Console.Write(CalcIPUtils.PadRightTo(address, addressWidth));
             };
+
+            ConsoleColor originalColor = Console.ForegroundColor;
 
             outputInitialColumns("Address:", addr.ToString());
             OutputBinaryIPv6Address(addr, net.SubnetMask);
@@ -271,6 +277,8 @@ namespace CalcIP
                 Console.ForegroundColor = Color.Label;
                 Console.WriteLine("no hosts/net");
             }
+
+            Console.ForegroundColor = originalColor;
         }
 
         private static void OutputBinaryIPv4Address(IPv4Address addr, IPv4Address? subnetMask = null, bool colorClass = false,
