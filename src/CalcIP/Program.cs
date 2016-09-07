@@ -55,14 +55,11 @@ namespace CalcIP
         public static void UsageAndExit(int exitCode = 1)
         {
             Console.Error.WriteLine(
-                "Usage: CalcIP SPEC...\r\n" +
-                "       CalcIP -m|--minimize SPEC...\r\n" +
+                "Usage: CalcIP IPADDRESS/SUBNET...\r\n" +
+                "       CalcIP -m|--minimize IPADDRESS/SUBNET...\r\n" +
                 "       CalcIP -d|--derange IPADDRESS IPADDRESS\r\n" +
                 "       CalcIP -s|--split IPADDRESS/CIDRPREFIX HOSTCOUNT...\r\n" +
-                "       CalcIP -r|--resize SPEC SUBNET\r\n" +
-                "\r\n" +
-                "SPEC is one of: IPADDRESS/IPSUBNETMASK\r\n" +
-                "                IPADDRESS/CIDRPREFIX\r\n" +
+                "       CalcIP -r|--resize IPADDRESS/SUBNET SUBNET\r\n" +
                 "\r\n" +
                 "SUBNET is one of: SUBNETMASK\r\n" +
                 "                  CIDRPREFIX\r\n" +
