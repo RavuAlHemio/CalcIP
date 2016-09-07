@@ -25,7 +25,7 @@ namespace CalcIP
                 }
 
                 Console.WriteLine("Subnet to split:");
-                ShowNet.OutputIPv4Network(addressAndNet.Item2.BaseAddress, addressAndNet.Item2);
+                ShowNet.OutputIPv4Network(addressAndNet.Item2, addressAndNet.Item2.BaseAddress);
                 Console.WriteLine();
 
                 BigInteger[] splits = ParseHostCountSpecs(args);
@@ -45,7 +45,7 @@ namespace CalcIP
                 foreach (Tuple<BigInteger, IPNetwork<IPv4Address>> splitAndSubnet in splits.Zip(subnets, Tuple.Create))
                 {
                     Console.WriteLine("Subnet for {0} hosts:", splitAndSubnet.Item1);
-                    ShowNet.OutputIPv4Network(splitAndSubnet.Item2.BaseAddress, splitAndSubnet.Item2);
+                    ShowNet.OutputIPv4Network(splitAndSubnet.Item2);
                     Console.WriteLine();
                 }
 
@@ -75,7 +75,7 @@ namespace CalcIP
                 }
 
                 Console.WriteLine("Subnet to split:");
-                ShowNet.OutputIPv6Network(addressAndNet.Item2.BaseAddress, addressAndNet.Item2);
+                ShowNet.OutputIPv6Network(addressAndNet.Item2, addressAndNet.Item2.BaseAddress);
 
                 BigInteger[] splits = ParseHostCountSpecs(args);
                 if (splits == null)
@@ -94,7 +94,7 @@ namespace CalcIP
                 foreach (Tuple<BigInteger, IPNetwork<IPv6Address>> splitAndSubnet in splits.Zip(subnets, Tuple.Create))
                 {
                     Console.WriteLine("Subnet for {0} hosts:", splitAndSubnet.Item1);
-                    ShowNet.OutputIPv6Network(addressAndNet.Item2.BaseAddress, addressAndNet.Item2);
+                    ShowNet.OutputIPv6Network(addressAndNet.Item2);
                     Console.WriteLine();
                 }
 

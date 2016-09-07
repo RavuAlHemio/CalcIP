@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace CalcIP
 {
@@ -194,6 +196,135 @@ namespace CalcIP
             where T : IComparable<T>
         {
             return (one.CompareTo(other) <= 0) ? one : other;
+        }
+
+        public static TAddress UnravelAddress<TAddress>(TAddress address, TAddress subnetMask)
+            where TAddress : struct, IIPAddress<TAddress>
+        {
+            if (CalcIPUtils.CidrPrefixFromSubnetMaskBytes(subnetMask.Bytes).HasValue)
+            {
+                // nothing to unravel :)
+                return address;
+            }
+
+            // given an address ABCDEFGH with subnet mask 11001001, turn it into ABEHCDFG (i.e. with subnet mask 11110000)
+            byte[] addressBytes = address.Bytes;
+            byte[] maskBytes = subnetMask.Bytes;
+
+            var netBits = new List<bool>(addressBytes.Length);
+            var hostBits = new List<bool>(addressBytes.Length);
+
+            // find the bits
+            for (int i = 0; i < addressBytes.Length; ++i)
+            {
+                for (int bit = 7; bit >= 0; --bit)
+                {
+                    bool addressBit = ((addressBytes[i] & (1 << bit)) != 0);
+                    bool isNet = ((maskBytes[i] & (1 << bit)) != 0);
+
+                    if (isNet)
+                    {
+                        netBits.Add(addressBit);
+                    }
+                    else
+                    {
+                        hostBits.Add(addressBit);
+                    }
+                }
+            }
+
+            var unraveledBits = new List<bool>(netBits.Count + hostBits.Count);
+            unraveledBits.AddRange(netBits);
+            unraveledBits.AddRange(hostBits);
+
+            var retBytes = new byte[addressBytes.Length];
+            for (int i = 0; i < retBytes.Length; ++i)
+            {
+                byte b = 0;
+                for (int bit = 0; bit < 8; ++bit)
+                {
+                    if (unraveledBits[8*i+bit])
+                    {
+                        b |= (byte)(1 << (7-bit));
+                    }
+                }
+                retBytes[i] = b;
+            }
+
+            return address.MaybeFromBytes(retBytes).Value;
+        }
+
+        public static TAddress WeaveAddress<TAddress>(TAddress address, TAddress subnetMask)
+            where TAddress : struct, IIPAddress<TAddress>
+        {
+            if (CalcIPUtils.CidrPrefixFromSubnetMaskBytes(subnetMask.Bytes).HasValue)
+            {
+                // nothing to weave :)
+                return address;
+            }
+
+            // given an address ABCDEFGH with subnet mask 11001001, convert from subnet mask 11110000 turning it into ABEFCGHD
+
+            byte[] addressBytes = address.Bytes;
+            byte[] maskBytes = subnetMask.Bytes;
+            int cidrPrefix = subnetMask.Bytes.Sum(b => CalcIPUtils.BytePopCount[b]);
+
+            var netBits = new List<bool>(addressBytes.Length);
+            var hostBits = new List<bool>(addressBytes.Length);
+            var maskBits = new List<bool>(maskBytes.Length);
+
+            // find the bits
+            for (int i = 0; i < addressBytes.Length; ++i)
+            {
+                for (int bit = 0; bit < 8; ++bit)
+                {
+                    int totalBitIndex = 8*i + bit;
+                    bool addressBit = ((addressBytes[i] & (1 << (7-bit))) != 0);
+                    bool isNet = (totalBitIndex < cidrPrefix);
+
+                    if (isNet)
+                    {
+                        netBits.Add(addressBit);
+                    }
+                    else
+                    {
+                        hostBits.Add(addressBit);
+                    }
+
+                    bool maskBit = ((maskBytes[i] & (1 << (7-bit))) != 0);
+                    maskBits.Add(maskBit);
+                }
+            }
+
+            var retBytes = new byte[addressBytes.Length];
+            int netIndex = 0;
+            int hostIndex = 0;
+            for (int i = 0; i < retBytes.Length; ++i)
+            {
+                byte b = 0;
+                for (int bit = 0; bit < 8; ++bit)
+                {
+                    bool shouldSetBit;
+                    if (maskBits[8*i+bit])
+                    {
+                        shouldSetBit = netBits[netIndex];
+                        ++netIndex;
+                    }
+                    else
+                    {
+                        shouldSetBit = hostBits[hostIndex];
+                        ++hostIndex;
+                    }
+
+                    if (shouldSetBit)
+                    {
+                        b |= (byte)(1 << (7-bit));
+                    }
+                }
+                retBytes[i] = b;
+            }
+
+            return address.MaybeFromBytes(retBytes).Value;
         }
     }
 }

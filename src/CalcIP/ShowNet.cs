@@ -52,7 +52,7 @@ namespace CalcIP
             {
                 return;
             }
-            OutputIPv4Network(addressAndNet.Item1, addressAndNet.Item2);
+            OutputIPv4Network(addressAndNet.Item2, addressAndNet.Item1);
         }
 
         private static void ProcessIPv4Subnet(Match match)
@@ -62,7 +62,7 @@ namespace CalcIP
             {
                 return;
             }
-            OutputIPv4Network(addressAndNet.Item1, addressAndNet.Item2);
+            OutputIPv4Network(addressAndNet.Item2, addressAndNet.Item1);
         }
 
         private static void ProcessIPv6Cidr(Match match)
@@ -72,7 +72,7 @@ namespace CalcIP
             {
                 return;
             }
-            OutputIPv6Network(addressAndNet.Item1, addressAndNet.Item2);
+            OutputIPv6Network(addressAndNet.Item2, addressAndNet.Item1);
         }
 
         private static void ProcessIPv6Subnet(Match match)
@@ -82,10 +82,10 @@ namespace CalcIP
             {
                 return;
             }
-            OutputIPv6Network(addressAndNet.Item1, addressAndNet.Item2);
+            OutputIPv6Network(addressAndNet.Item2, addressAndNet.Item1);
         }
 
-        public static void OutputIPv4Network(IPv4Address addr, IPNetwork<IPv4Address> net)
+        public static void OutputIPv4Network(IPNetwork<IPv4Address> net, IPv4Address? addr = null)
         {
             const int labelWidth = 11;
             const int addressWidth = 21;
@@ -100,25 +100,28 @@ namespace CalcIP
                 Console.Write(CalcIPUtils.PadRightTo(address, addressWidth));
             };
 
-            outputInitialColumns("Address:", addr.ToString());
-            OutputBinaryIPv4Address(addr, net.SubnetMask);
-            Console.WriteLine();
+            if (addr.HasValue)
+            {
+                outputInitialColumns("Address:", addr.ToString());
+                OutputBinaryIPv4Address(addr.Value, net.SubnetMask);
+                Console.WriteLine();
 
-            outputInitialColumns(
-                "Netmask:",
-                net.CidrPrefix.HasValue
-                    ? string.Format("{0} = {1}", net.SubnetMask, net.CidrPrefix.Value)
-                    : net.SubnetMask.ToString()
-            );
-            OutputBinaryIPv4Address(net.SubnetMask, overrideColor: Color.MaskBits);
-            Console.WriteLine();
+                outputInitialColumns(
+                    "Netmask:",
+                    net.CidrPrefix.HasValue
+                        ? string.Format("{0} = {1}", net.SubnetMask, net.CidrPrefix.Value)
+                        : net.SubnetMask.ToString()
+                );
+                OutputBinaryIPv4Address(net.SubnetMask, overrideColor: Color.MaskBits);
+                Console.WriteLine();
 
-            outputInitialColumns("Wildcard:", net.CiscoWildcard.ToString());
-            OutputBinaryIPv4Address(net.CiscoWildcard);
-            Console.WriteLine();
+                outputInitialColumns("Wildcard:", net.CiscoWildcard.ToString());
+                OutputBinaryIPv4Address(net.CiscoWildcard);
+                Console.WriteLine();
 
-            Console.ForegroundColor = Color.Label;
-            Console.WriteLine("=>");
+                Console.ForegroundColor = Color.Label;
+                Console.WriteLine("=>");
+            }
 
             outputInitialColumns(
                 "Network:",
@@ -196,10 +199,12 @@ namespace CalcIP
             Console.ForegroundColor = originalColor;
         }
 
-        public static void OutputIPv6Network(IPv6Address addr, IPNetwork<IPv6Address> net)
+        public static void OutputIPv6Network(IPNetwork<IPv6Address> net, IPv6Address? addr = null)
         {
             const int labelWidth = 11;
             const int addressWidth = 46;
+
+            ConsoleColor originalColor = Console.ForegroundColor;
 
             Action<string, string> outputInitialColumns = (label, address) =>
             {
@@ -209,27 +214,28 @@ namespace CalcIP
                 Console.Write(CalcIPUtils.PadRightTo(address, addressWidth));
             };
 
-            ConsoleColor originalColor = Console.ForegroundColor;
+            if (addr.HasValue)
+            {
+                outputInitialColumns("Address:", addr.ToString());
+                OutputBinaryIPv6Address(addr.Value, net.SubnetMask);
+                Console.WriteLine();
 
-            outputInitialColumns("Address:", addr.ToString());
-            OutputBinaryIPv6Address(addr, net.SubnetMask);
-            Console.WriteLine();
+                outputInitialColumns(
+                    "Netmask:",
+                    net.CidrPrefix.HasValue
+                        ? string.Format("{0} = {1}", net.SubnetMask, net.CidrPrefix.Value)
+                        : net.SubnetMask.ToString()
+                );
+                OutputBinaryIPv6Address(net.SubnetMask, overrideColor: Color.MaskBits);
+                Console.WriteLine();
 
-            outputInitialColumns(
-                "Netmask:",
-                net.CidrPrefix.HasValue
-                    ? string.Format("{0} = {1}", net.SubnetMask, net.CidrPrefix.Value)
-                    : net.SubnetMask.ToString()
-            );
-            OutputBinaryIPv6Address(net.SubnetMask, overrideColor: Color.MaskBits);
-            Console.WriteLine();
+                outputInitialColumns("Wildcard:", net.CiscoWildcard.ToString());
+                OutputBinaryIPv6Address(net.CiscoWildcard);
+                Console.WriteLine();
 
-            outputInitialColumns("Wildcard:", net.CiscoWildcard.ToString());
-            OutputBinaryIPv6Address(net.CiscoWildcard);
-            Console.WriteLine();
-
-            Console.ForegroundColor = Color.Label;
-            Console.WriteLine("=>");
+                Console.ForegroundColor = Color.Label;
+                Console.WriteLine("=>");
+            }
 
             outputInitialColumns(
                 "Network:",

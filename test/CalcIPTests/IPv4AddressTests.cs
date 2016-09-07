@@ -1,5 +1,4 @@
-﻿using System;
-using CalcIP;
+﻿using CalcIP;
 using Xunit;
 
 namespace CalcIPTests
