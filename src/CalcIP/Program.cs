@@ -30,6 +30,41 @@ namespace CalcIP
                 UsageAndExit();
             }
 
+            if (args[0] == "--stdin")
+            {
+                return RunFromStdin();
+            }
+
+            return RunSingleArgs(args);
+        }
+
+        public static int RunFromStdin()
+        {
+            int retCode = 0;
+
+            string line;
+            while ((line = Console.ReadLine()) != null)
+            {
+                // split on whitespace, removing empty entries
+                string[] args = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (args.Length == 0)
+                {
+                    Console.WriteLine();
+                    continue;
+                }
+
+                int lineRetCode = RunSingleArgs(args);
+                if (retCode < lineRetCode)
+                {
+                    retCode = lineRetCode;
+                }
+            }
+
+            return retCode;
+        }
+
+        public static int RunSingleArgs(string[] args)
+        {
             if (args[0] == "-m" || args[0] == "--minimize")
             {
                 return Minimize.PerformMinimize(args);
@@ -60,6 +95,7 @@ namespace CalcIP
                 "       CalcIP -d|--derange IPADDRESS IPADDRESS\r\n" +
                 "       CalcIP -s|--split IPADDRESS/CIDRPREFIX HOSTCOUNT...\r\n" +
                 "       CalcIP -r|--resize IPADDRESS/SUBNET SUBNET\r\n" +
+                "       CalcIP --stdin\r\n" +
                 "\r\n" +
                 "SUBNET is one of: SUBNETMASK\r\n" +
                 "                  CIDRPREFIX\r\n" +
