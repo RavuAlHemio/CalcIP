@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CalcIP;
 using Xunit;
 
@@ -82,6 +83,67 @@ namespace CalcIPTests
             Assert.Equal(0xFFBFFAF0u, net.LastHostAddress.Value.AddressValue);
             Assert.Equal(0xFFBFFAF2u, net.BroadcastAddress.Value.AddressValue);
             Assert.Null(net.CidrPrefix);
+        }
+
+        [Fact]
+        public void TestMinimizeTunet()
+        {
+            var netsMust = new IPv4Network[]
+            {
+                new IPv4Network(IPv4Address.Parse("128.130.0.0"), 15),
+                new IPv4Network(IPv4Address.Parse("192.35.240.0"), 22),
+                new IPv4Network(IPv4Address.Parse("192.35.244.0"), 24),
+                new IPv4Network(IPv4Address.Parse("193.170.72.0"), 21),
+                new IPv4Network(IPv4Address.Parse("193.170.72.0"), 22),
+                new IPv4Network(IPv4Address.Parse("193.170.76.0"), 23),
+                new IPv4Network(IPv4Address.Parse("193.170.78.0"), 24),
+                new IPv4Network(IPv4Address.Parse("193.170.79.0"), 24),
+            };
+
+            List<IPNetwork<IPv4Address>> netsMinimized = Minimize.MinimizeSubnets(netsMust,
+                (addr, mask) => new IPv4Network(addr, mask));
+
+            foreach (IPNetwork<IPv4Address> minNet in netsMinimized)
+            {
+                for (IPv4Address addr = minNet.BaseAddress; addr.CompareTo(minNet.LastAddressOfSubnet) <= 0; addr = addr + 1)
+                {
+                    bool contained = false;
+                    foreach (IPNetwork<IPv4Address> origNet in netsMust)
+                    {
+                        if (origNet.Contains(addr))
+                        {
+                            contained = true;
+                            break;
+                        }
+                    }
+
+                    if (!contained)
+                    {
+                        Assert.True(false, $"IP address {addr} in minimized net {minNet} not contained in any original net");
+                    }
+                }
+            }
+
+            foreach (IPNetwork<IPv4Address> origNet in netsMust)
+            {
+                for (IPv4Address addr = origNet.BaseAddress; addr.CompareTo(origNet.LastAddressOfSubnet) <= 0; addr = addr + 1)
+                {
+                    bool contained = false;
+                    foreach (IPNetwork<IPv4Address> minNet in netsMinimized)
+                    {
+                        if (minNet.Contains(addr))
+                        {
+                            contained = true;
+                            break;
+                        }
+                    }
+
+                    if (!contained)
+                    {
+                        Assert.True(false, $"IP address {addr} in original net {origNet} not contained in any minimized net");
+                    }
+                }
+            }
         }
     }
 }
