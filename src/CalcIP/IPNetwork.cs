@@ -32,7 +32,7 @@ namespace CalcIP
 
         public TAddress CiscoWildcard => SubnetMask.BitwiseNot();
 
-        public BigInteger HostCount
+        public BigInteger AddressCount
         {
             get
             {
@@ -47,12 +47,11 @@ namespace CalcIP
                     }
                 }
 
-                // minus network, minus broadcast
-                ret -= two;
-
                 return ret;
             }
         }
+
+        public BigInteger HostCount => AddressCount - 2; // minus network, minus broadcast
 
         public TAddress? FirstHostAddress
         {

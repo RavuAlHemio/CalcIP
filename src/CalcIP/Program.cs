@@ -6,9 +6,9 @@ namespace CalcIP
 {
     public static class Program
     {
-        public static readonly Regex IPv4WithSubnetRegex = new Regex("^(?<addr>[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+)/(?<mask>[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+)$", RegexOptions.Compiled);
-        public static readonly Regex IPv4WithCidrRegex = new Regex("^(?<addr>[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+)/(?<cidr>[0-9]+)$", RegexOptions.Compiled);
-        public static readonly Regex IPv6WithSubnetRegex = new Regex("^(?<addr>[0-9a-f:]+)/(?<mask>[0-9a-f:]+)$", RegexOptions.Compiled);
+        public static readonly Regex IPv4WithSubnetRegex = new Regex("^(?<addr>[0-9]+(?:[.][0-9]+){3})/(?<wildcard>-)?(?<mask>[0-9]+(?:[.][0-9]+){3})$", RegexOptions.Compiled);
+        public static readonly Regex IPv4WithCidrRegex = new Regex("^(?<addr>[0-9]+(?:[.][0-9]+){3})/(?<cidr>[0-9]+)$", RegexOptions.Compiled);
+        public static readonly Regex IPv6WithSubnetRegex = new Regex("^(?<addr>[0-9a-f:]+)/(?<wildcard>-)?(?<mask>[0-9a-f:]+)$", RegexOptions.Compiled);
         public static readonly Regex IPv6WithCidrRegex = new Regex("^(?<addr>[0-9a-f:]+)/(?<cidr>[0-9]+)$", RegexOptions.Compiled);
 
         public static int Main(string[] args)
@@ -99,6 +99,7 @@ namespace CalcIP
                 "\r\n" +
                 "SUBNET is one of: SUBNETMASK\r\n" +
                 "                  CIDRPREFIX\r\n" +
+                "                  -WILDCARD\r\n" +
                 "\r\n" +
                 "IPv4 and IPv6 are supported, but cannot be mixed within an invocation.\r\n"
             );
@@ -109,6 +110,7 @@ namespace CalcIP
         {
             string addressString = match.Groups["addr"].Value;
             string maskString = match.Groups["mask"].Value;
+            bool isWildcard = match.Groups["wildcard"].Success;
 
             var address = IPv4Address.MaybeParse(addressString);
             if (!address.HasValue)
@@ -122,6 +124,11 @@ namespace CalcIP
             {
                 Console.Error.WriteLine("{0}: Invalid IPv4 subnet mask {1}", match.Value, maskString);
                 return null;
+            }
+
+            if (isWildcard)
+            {
+                mask = ~mask.Value;
             }
 
             return Tuple.Create(address.Value, new IPv4Network(address.Value, mask.Value));
@@ -185,6 +192,7 @@ namespace CalcIP
         {
             string addressString = match.Groups["addr"].Value;
             string maskString = match.Groups["mask"].Value;
+            bool isWildcard = match.Groups["wildcard"].Success;
 
             var address = IPv6Address.MaybeParse(addressString);
             if (!address.HasValue)
@@ -200,6 +208,10 @@ namespace CalcIP
                 return null;
             }
 
+            if (isWildcard)
+            {
+                mask = ~mask.Value;
+            }
             return Tuple.Create(address.Value, new IPv6Network(address.Value, mask.Value));
         }
     }
