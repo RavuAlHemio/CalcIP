@@ -7,82 +7,8 @@ namespace CalcIP
     {
         public static int PerformShowNet(string[] args)
         {
-            foreach (string spec in args)
-            {
-                // attempt to identify the input format
-
-                var ipv4CidrMatch = Program.IPv4WithCidrRegex.Match(spec);
-                if (ipv4CidrMatch.Success)
-                {
-                    ProcessIPv4Cidr(ipv4CidrMatch);
-                    continue;
-                }
-
-                var ipv4SubnetMatch = Program.IPv4WithSubnetRegex.Match(spec);
-                if (ipv4SubnetMatch.Success)
-                {
-                    ProcessIPv4Subnet(ipv4SubnetMatch);
-                    continue;
-                }
-
-                var ipv6CidrMatch = Program.IPv6WithCidrRegex.Match(spec);
-                if (ipv6CidrMatch.Success)
-                {
-                    ProcessIPv6Cidr(ipv6CidrMatch);
-                    continue;
-                }
-
-                var ipv6SubnetMatch = Program.IPv6WithSubnetRegex.Match(spec);
-                if (ipv6SubnetMatch.Success)
-                {
-                    ProcessIPv6Subnet(ipv6SubnetMatch);
-                    continue;
-                }
-
-                Console.Error.WriteLine("Failed to identify {0} input type.", spec);
-            }
-
+            Program.PerformOnSubnets(args, (a4, n4) => OutputIPv4Network(n4, a4), (a6, n6) => OutputIPv6Network(n6, a6));
             return 0;
-        }
-
-        private static void ProcessIPv4Cidr(Match match)
-        {
-            Tuple<IPv4Address, IPv4Network> addressAndNet = Program.ParseIPv4CidrSpec(match);
-            if (addressAndNet == null)
-            {
-                return;
-            }
-            OutputIPv4Network(addressAndNet.Item2, addressAndNet.Item1);
-        }
-
-        private static void ProcessIPv4Subnet(Match match)
-        {
-            Tuple<IPv4Address, IPv4Network> addressAndNet = Program.ParseIPv4SubnetSpec(match);
-            if (addressAndNet == null)
-            {
-                return;
-            }
-            OutputIPv4Network(addressAndNet.Item2, addressAndNet.Item1);
-        }
-
-        private static void ProcessIPv6Cidr(Match match)
-        {
-            Tuple<IPv6Address, IPv6Network> addressAndNet = Program.ParseIPv6CidrSpec(match);
-            if (addressAndNet == null)
-            {
-                return;
-            }
-            OutputIPv6Network(addressAndNet.Item2, addressAndNet.Item1);
-        }
-
-        private static void ProcessIPv6Subnet(Match match)
-        {
-            Tuple<IPv6Address, IPv6Network> addressAndNet = Program.ParseIPv6SubnetSpec(match);
-            if (addressAndNet == null)
-            {
-                return;
-            }
-            OutputIPv6Network(addressAndNet.Item2, addressAndNet.Item1);
         }
 
         public static void OutputIPv4Network(IPNetwork<IPv4Address> net, IPv4Address? addr = null)

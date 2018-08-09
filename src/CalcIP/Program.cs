@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CalcIP
@@ -81,6 +83,10 @@ namespace CalcIP
             {
                 return Resize.PerformResize(args);
             }
+            else if (args[0] == "-e" || args[0] == "--enumerate")
+            {
+                return Enumerate.PerformEnumerate(args);
+            }
             else
             {
                 return ShowNet.PerformShowNet(args);
@@ -95,6 +101,7 @@ namespace CalcIP
                 "       CalcIP -d|--derange IPADDRESS IPADDRESS\r\n" +
                 "       CalcIP -s|--split IPADDRESS/CIDRPREFIX HOSTCOUNT...\r\n" +
                 "       CalcIP -r|--resize IPADDRESS/SUBNET SUBNET\r\n" +
+                "       CalcIP -e|--enumerate IPADDRESS/SUBNET\r\n" +
                 "       CalcIP --stdin\r\n" +
                 "\r\n" +
                 "SUBNET is one of: SUBNETMASK\r\n" +
@@ -212,7 +219,75 @@ namespace CalcIP
             {
                 mask = ~mask.Value;
             }
+
             return Tuple.Create(address.Value, new IPv6Network(address.Value, mask.Value));
+        }
+
+        public static void PerformOnSubnets(IEnumerable<string> subnetSpecs,
+            Action<IPv4Address, IPv4Network> ipv4Action, Action<IPv6Address, IPv6Network> ipv6Action)
+        {
+            foreach (string spec in subnetSpecs.Skip(1))
+            {
+                // attempt to identify the input format
+
+                // scope
+                {
+                    Match ipv4CidrMatch = Program.IPv4WithCidrRegex.Match(spec);
+                    if (ipv4CidrMatch.Success)
+                    {
+                        Tuple<IPv4Address, IPv4Network> ipv4Tuple = ParseIPv4CidrSpec(ipv4CidrMatch);
+                        if (ipv4Tuple != null)
+                        {
+                            ipv4Action.Invoke(ipv4Tuple.Item1, ipv4Tuple.Item2);
+                        }
+                        continue;
+                    }
+                }
+
+                // scope
+                {
+                    Match ipv4SubnetMatch = Program.IPv4WithSubnetRegex.Match(spec);
+                    if (ipv4SubnetMatch.Success)
+                    {
+                        Tuple<IPv4Address, IPv4Network> ipv4Tuple = ParseIPv4SubnetSpec(ipv4SubnetMatch);
+                        if (ipv4Tuple != null)
+                        {
+                            ipv4Action.Invoke(ipv4Tuple.Item1, ipv4Tuple.Item2);
+                        }
+                        continue;
+                    }
+                }
+
+                // scope
+                {
+                    Match ipv6CidrMatch = Program.IPv6WithCidrRegex.Match(spec);
+                    if (ipv6CidrMatch.Success)
+                    {
+                        Tuple<IPv6Address, IPv6Network> ipv6Tuple = ParseIPv6CidrSpec(ipv6CidrMatch);
+                        if (ipv6Tuple != null)
+                        {
+                            ipv6Action.Invoke(ipv6Tuple.Item1, ipv6Tuple.Item2);
+                        }
+                        continue;
+                    }
+                }
+
+                // scope
+                {
+                    Match ipv6SubnetMatch = Program.IPv6WithSubnetRegex.Match(spec);
+                    if (ipv6SubnetMatch.Success)
+                    {
+                        Tuple<IPv6Address, IPv6Network> ipv6Tuple = ParseIPv6SubnetSpec(ipv6SubnetMatch);
+                        if (ipv6Tuple != null)
+                        {
+                            ipv6Action.Invoke(ipv6Tuple.Item1, ipv6Tuple.Item2);
+                        }
+                        continue;
+                    }
+                }
+
+                Console.Error.WriteLine("Failed to identify {0} input type.", spec);
+            }
         }
     }
 }
