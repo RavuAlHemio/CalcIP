@@ -7,7 +7,11 @@ namespace CalcIP
     {
         public static int PerformShowNet(string[] args)
         {
-            Program.PerformOnSubnets(args, (a4, n4) => OutputIPv4Network(n4, a4), (a6, n6) => OutputIPv6Network(n6, a6));
+            Program.PerformOnSubnets(
+                args,
+                (a4, n4) => OutputIPv4Network(n4, a4),
+                (a6, n6) => OutputIPv6Network(n6, a6)
+            );
             return 0;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace CalcIP
@@ -8,7 +9,11 @@ namespace CalcIP
     {
         public static int PerformEnumerate(string[] args)
         {
-            Program.PerformOnSubnets(args, (a, n) => OutputEnumeratedNetwork(n), (a, n) => OutputEnumeratedNetwork(n));
+            Program.PerformOnSubnets(
+                args.Skip(1),
+                (a, n) => OutputEnumeratedNetwork(n),
+                (a, n) => OutputEnumeratedNetwork(n)
+            );
             return 0;
         }
 

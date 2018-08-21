@@ -226,7 +226,7 @@ namespace CalcIP
         public static void PerformOnSubnets(IEnumerable<string> subnetSpecs,
             Action<IPv4Address, IPv4Network> ipv4Action, Action<IPv6Address, IPv6Network> ipv6Action)
         {
-            foreach (string spec in subnetSpecs.Skip(1))
+            foreach (string spec in subnetSpecs)
             {
                 // attempt to identify the input format
 
